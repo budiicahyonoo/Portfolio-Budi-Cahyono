@@ -57,14 +57,15 @@ export function HeroSection({ data }: HeroSectionProps) {
           {/* Right Content - Image */}
           <div className="relative">
             <div className="relative w-full aspect-square max-w-md mx-auto">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl"></div>
-              <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-primary shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-primary/20 to-transparent rounded-full blur-3xl animate-pulse"></div>
+              <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-primary shadow-[0_0_50px_rgba(234,179,8,0.3)]">
                 <Image
-                  src={data.photo_url || "/placeholder.svg"}
+                  src={data.photo_url || "/placeholder.svg?height=400&width=400"}
                   alt={data.name}
                   fill
                   className="object-cover"
                   priority
+                  unoptimized
                 />
               </div>
             </div>
