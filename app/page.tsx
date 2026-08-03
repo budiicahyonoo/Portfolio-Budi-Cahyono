@@ -1,50 +1,34 @@
-import { createClient } from "@/lib/supabase/server"
+import prisma from "@/lib/prisma"
 import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/hero-section"
-import { SkillsSection } from "@/components/skills-section"
 import { ProjectsSection } from "@/components/projects-section"
 import { ExperienceSection } from "@/components/experience-section"
 import { BlogSection } from "@/components/blog-section"
-import { ContactSection } from "@/components/contact-section"
-import { Footer } from "@/components/footer"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 export default async function Home() {
-  const supabase = await createClient()
-
-  // Fetch all data in parallel
-  const [
-    { data: homeData },
-    { data: skills },
-    { data: projects },
-    { data: experience },
-    { data: blog },
-    { data: contact },
-  ] = await Promise.all([
-    supabase.from("home").select("*").limit(1),
-    supabase.from("skills").select("*").order("sort_order"),
-    supabase.from("projects").select("*").order("sort_order"),
-    supabase.from("experience").select("*").order("sort_order"),
-    supabase.from("blog").select("*").order("sort_order"),
-    supabase.from("contact").select("*").order("sort_order"),
+  // Fetch all data in parallel menggunakan Prisma
+  const [homeData, projects, experience, blog] = await Promise.all([
+    prisma.home.findFirst(),
+    prisma.project.findMany({ orderBy: { sort_order: 'asc' } }),
+    prisma.experience.findMany({ orderBy: { sort_order: 'asc' } }),
+    prisma.blog.findMany({ orderBy: { sort_order: 'asc' } }),
   ])
 
-  const home = homeData?.[0]
+  const home = homeData
 
   return (
     <div className="min-h-screen">
       <Navbar />
       <main>
-        {home && <HeroSection data={home} />}
-        {skills && <SkillsSection skills={skills} />}
-        {projects && <ProjectsSection projects={projects} />}
-        {experience && <ExperienceSection experiences={experience} />}
-        {blog && <BlogSection posts={blog} />}
-        {contact && <ContactSection contacts={contact} />}
+        {/* Tambahkan "as any" untuk membungkam peringatan TypeScript */}
+        {home && <HeroSection data={home as any} />}
+        {projects && projects.length > 0 && <ProjectsSection projects={projects as any} />}
+        {experience && experience.length > 0 && <ExperienceSection experiences={experience as any} />}
+        {blog && blog.length > 0 && <BlogSection posts={blog as any} />}
       </main>
-      <Footer />
     </div>
   )
 }

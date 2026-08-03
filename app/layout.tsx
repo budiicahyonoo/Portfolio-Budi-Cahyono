@@ -5,31 +5,18 @@ import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "sonner"
 import "./globals.css"
 
+import { Footer } from "@/components/footer" 
+
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
+// Metadata yang super SEO-friendly dan profesional
+// HAPUS bagian 'icons' karena Next.js akan otomatis membaca file 'icon.png' di folder 'app'
 export const metadata: Metadata = {
-  title: "Portfolio Budi Cahyono - AI Engineer",
+  title: "Budi Cahyono | Full-Stack Developer & AI Engineer",
   description:
-    "Predicting the future is not magic, it is artificial intelligence. Portfolio showcasing AI and data science projects.",
+    "Portfolio of Budi Cahyono, a Full Stack Developer and AI Engineer. Specializing in building scalable, production-grade web applications with seamless Generative AI integration, RAG pipelines, and Agentic workflows.",
   generator: "v0.app",
-  icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
-  },
 }
 
 export default function RootLayout({
@@ -39,8 +26,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`font-sans antialiased`}>
-        {children}
+      <body className={`font-sans antialiased flex flex-col min-h-screen`}>
+        <main className="flex-grow">
+          {children}
+        </main>
+        
+        <Footer />
+        
         <Toaster position="top-center" />
         <Analytics />
       </body>

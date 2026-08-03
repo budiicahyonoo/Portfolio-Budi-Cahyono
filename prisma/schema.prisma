@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Home {
+  id                String   @id @default(uuid())
+  name              String
+  role              String
+  value_proposition String
+  photo_url         String?
+  email             String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+}
+
+model Project {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  category      String   // AI, App, Web
+  thumbnail_url String?
+  demo_url      String?
+  view_url      String?
+  technologies  String[]
+  sort_order    Int      @default(0)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
+
+model Experience {
+  id            String    @id @default(uuid())
+  title         String
+  description   String
+  category      String    // Work, Intern
+  thumbnail_url String?
+  demo_url      String?
+  view_url      String?
+  technologies  String[]
+  date_start    DateTime?
+  date_end      DateTime?
+  sort_order    Int       @default(0)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+}
+
+model Blog {
+  id            String    @id @default(uuid())
+  title         String
+  description   String
+  category      String    
+  thumbnail_url String?
+  content       String?   // Akan menampung teks HTML/Rich Text dari editor
+  view_url      String?
+  read_time     Int?
+  views         Int       @default(0) // Penghitung jumlah pembaca
+  likes         Int       @default(0) // Penghitung jumlah suka
+  sort_order    Int       @default(0)
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  comments      Comment[] // Relasi ke tabel komentar pembaca
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  blog_id    String
+  blog       Blog     @relation(fields: [blog_id], references: [id], onDelete: Cascade)
+  name       String   // Nama pengirim komentar
+  content    String   // Isi komentar
+  created_at DateTime @default(now())
+}

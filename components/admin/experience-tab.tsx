@@ -1,0 +1,170 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Plus, Trash2, Edit3, Briefcase, Loader2 } from "lucide-react";
+
+interface Experience {
+  id: string; title: string; description: string; category: string;
+  tags: string; image_url: string | null; date_start: string | null;
+  date_end: string | null; sort_order: number;
+}
+
+export function ExperienceTab() {
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  // Form State
+  const [title, setTitle] = useState(""); const [desc, setDesc] = useState("");
+  const [category, setCategory] = useState(""); const [tags, setTags] = useState("");
+  const [imageUrl, setImageUrl] = useState(""); const [dateStart, setDateStart] = useState("");
+  const [dateEnd, setDateEnd] = useState(""); const [sortOrder, setSortOrder] = useState("0");
+
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+
+  useEffect(() => { fetchExperiences(); }, []);
+
+  const fetchExperiences = async () => {
+    setIsLoading(true);
+    const res = await fetch("/api/experience");
+    if (res.ok) setExperiences(await res.json());
+    setIsLoading(false);
+  };
+
+  const resetForm = () => {
+    setEditingId(null); setTitle(""); setDesc(""); setCategory("");
+    setTags(""); setImageUrl(""); setDateStart(""); setDateEnd(""); setSortOrder("0");
+  };
+
+  const handleEdit = (e: Experience) => {
+    setEditingId(e.id); setTitle(e.title); setDesc(e.description); setCategory(e.category);
+    setTags(e.tags); setImageUrl(e.image_url || ""); setSortOrder(String(e.sort_order));
+    setDateStart(e.date_start ? new Date(e.date_start).toISOString().split('T')[0] : "");
+    setDateEnd(e.date_end ? new Date(e.date_end).toISOString().split('T')[0] : "");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    if (file.size > 4 * 1024 * 1024) return alert("⚠️ Maksimal 4MB");
+
+    setIsUploadingLogo(true);
+    try {
+      const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, { method: 'POST', body: file });
+      const data = await res.json();
+      if (data.url) {
+        setImageUrl(data.url);
+        alert("✅ Logo berhasil di-upload!");
+      }
+    } catch (err) {
+      alert("❌ Gagal mengunggah gambar.");
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    const payload = { title, description: desc, category, tags, image_url: imageUrl || null, date_start: dateStart || null, date_end: dateEnd || null, sort_order: Number(sortOrder) };
+    const endpoint = editingId ? `/api/experience/${editingId}` : "/api/experience";
+    const res = await fetch(endpoint, { method: editingId ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    if (res.ok) { fetchExperiences(); resetForm(); } else alert("Gagal menyimpan!");
+    setIsSubmitting(false);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Hapus pengalaman?")) return;
+    const res = await fetch(`/api/experience/${id}`, { method: "DELETE" });
+    if (res.ok) fetchExperiences();
+  };
+
+  return (
+    <div className="grid lg:grid-cols-3 gap-8 items-start animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="lg:col-span-1 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-6">
+        <div>
+          <h2 className="text-lg font-bold flex items-center gap-2">{editingId ? <Edit3 className="w-5 h-5 text-blue-600"/> : <Plus className="w-5 h-5 text-blue-600"/>} {editingId ? "Edit Pengalaman" : "Tambah Pengalaman"}</h2>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Posisi / Peran" />
+          <div className="grid grid-cols-2 gap-3">
+            <select 
+              required 
+              value={category} 
+              onChange={(e) => setCategory(e.target.value)}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="" disabled>Pilih Kategori</option>
+              <option value="Work">Work</option>
+              <option value="Intern">Intern</option>
+              <option value="Freelance">Freelance</option>
+            </select>
+            <Input type="number" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} placeholder="Urutan" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <Input type="date" value={dateStart} onChange={(e) => setDateStart(e.target.value)} />
+            <Input type="date" value={dateEnd} onChange={(e) => setDateEnd(e.target.value)} />
+          </div>
+          <textarea required value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Tanggung jawab..." className="w-full h-24 text-sm p-3 rounded-md border border-input focus:ring-2 focus:ring-blue-600 outline-none" />
+          <Input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="Tools (pisahkan koma)" />
+          
+          <div className="space-y-2 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+            <label className="text-xs font-bold text-slate-600">Logo Perusahaan</label>
+            {imageUrl && (
+              <div className="flex items-center gap-3 bg-white p-2 border rounded-lg mb-2">
+                <img src={imageUrl} className="h-6 w-6 object-contain" alt="Logo" />
+                <Button type="button" variant="ghost" size="sm" onClick={() => setImageUrl("")} className="text-red-500 ml-auto h-7 text-xs">Hapus</Button>
+              </div>
+            )}
+            <div className="relative">
+              <Input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleLogoUpload} 
+                disabled={isUploadingLogo} 
+                className="cursor-pointer file:text-blue-600 file:bg-blue-50 file:border-0 file:rounded-md file:px-3 file:py-1 file:mr-3 file:font-medium" 
+              />
+              {isUploadingLogo && (
+                <div className="absolute inset-0 bg-white/80 flex items-center justify-center rounded-md text-xs font-bold text-blue-600">
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" /> Mengunggah...
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button type="submit" disabled={isSubmitting || isUploadingLogo} className="flex-1 bg-blue-600 hover:bg-blue-700">{isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : "Simpan"}</Button>
+            {editingId && <Button type="button" variant="outline" onClick={resetForm}>Batal</Button>}
+          </div>
+        </form>
+      </div>
+
+      <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-4">
+        <h2 className="text-lg font-bold">Riwayat Pengalaman</h2>
+        {isLoading ? <p className="text-sm text-slate-400">Loading...</p> : (
+          <div className="flex flex-col gap-4">
+            {experiences.map((exp) => (
+              <div key={exp.id} className="border p-4 rounded-xl flex items-center gap-4 shadow-sm">
+                <div className="h-12 w-12 bg-slate-50 border rounded-lg flex items-center justify-center flex-shrink-0">
+                  {exp.image_url ? <img src={exp.image_url} className="h-full w-full object-contain p-1" /> : <Briefcase className="h-5 w-5 text-slate-300"/>}
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold leading-tight">{exp.title} <span className="text-[10px] ml-2 bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">{exp.category}</span></h3>
+                  <p className="text-xs text-slate-500 mt-1">{exp.description}</p>
+                </div>
+                <div className="flex flex-col gap-1 border-l pl-3">
+                  <Button size="icon" variant="ghost" onClick={() => handleEdit(exp)}><Edit3 className="w-4 h-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => handleDelete(exp.id)} className="text-red-500"><Trash2 className="w-4 h-4" /></Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
