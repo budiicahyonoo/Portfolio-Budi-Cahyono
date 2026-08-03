@@ -75,6 +75,9 @@ export function Footer() {
                 <AtSign size={18} />
               </a>
             </div>
+            <p className="text-sm text-slate-500 mt-6">
+              Find me in <a href="https://stackplustudio.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">stackplustudio.com</a>
+            </p>
           </div>
 
         </div>

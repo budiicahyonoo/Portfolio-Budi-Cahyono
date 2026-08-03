@@ -78,8 +78,10 @@ export function Navbar() {
 
           {/* KANAN - Book Session Button & Mobile Toggle */}
           <div className="flex-1 flex justify-end items-center gap-4">
-            <Link 
-              href="#contact" 
+            <Link
+              href="https://calendly.com/budicahyono-dev/new-meeting"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hidden md:flex items-center gap-2 bg-[#2b2b2b] hover:bg-[#3f3f3f] text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm border border-white/10"
             >
               <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
@@ -118,8 +120,10 @@ export function Navbar() {
                   {item.name}
                 </Link>
               ))}
-              <Link 
-                href="#contact" 
+              <Link
+                href="https://calendly.com/budicahyono-dev/new-meeting"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 bg-[#2b2b2b] text-white px-4 py-3 rounded-xl text-sm font-bold mt-2"
                 onClick={() => setIsOpen(false)}
               >
