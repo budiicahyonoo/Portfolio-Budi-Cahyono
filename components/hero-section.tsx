@@ -119,7 +119,7 @@ export function HeroSection({ data }: HeroSectionProps) {
                 Hire me
               </Button>
               <Button asChild size="lg" variant="outline" className="border-slate-200 text-slate-700 hover:bg-slate-50 font-medium px-8 rounded-xl">
-                <Link href="/cv.pdf" target="_blank" rel="noopener noreferrer">
+                <Link href="/cv_budi cahyono_full stack developer.pdf" target="_blank" rel="noopener noreferrer">
                   Download CV
                 </Link>
               </Button>
