@@ -12,12 +12,13 @@ export function Navbar() {
 
   const navItems = [
     { name: "HOME", href: "#home" },
+    { name: "SKILLS", href: "#skills" },
     { name: "PROJECTS", href: "#projects" },
     { name: "EXPERIENCE", href: "#experience" },
     { name: "BLOG", href: "#blog" },
+    { name: "CONTACT", href: "#contact" },
   ]
 
-  // Efek untuk memantau scroll (agar menu aktif otomatis saat di-scroll)
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 24)
@@ -27,9 +28,11 @@ export function Navbar() {
 
       for (const section of sections) {
         const element = document.getElementById(section)
-        if (element && 
-            element.offsetTop <= scrollPosition && 
-            element.offsetTop + element.offsetHeight > scrollPosition) {
+        if (
+          element && 
+          element.offsetTop <= scrollPosition && 
+          element.offsetTop + element.offsetHeight > scrollPosition
+        ) {
           setActiveSection(section.toUpperCase())
         }
       }
@@ -45,26 +48,25 @@ export function Navbar() {
       className={cn(
         "fixed top-0 w-full z-50 border-b transition-all duration-500",
         scrolled
-          ? "nav-nav border-white/60 py-0"
+          ? "border-slate-200/80 py-0 backdrop-blur-md bg-white/85 shadow-sm"
           : "border-transparent bg-transparent"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-18">
 
-          {/* TENGAH - Pill Menu Glassmorphism (Desktop) */}
           <div className="hidden md:flex flex-1 justify-center">
-            <div className="glass-pill flex items-center rounded-full p-1.5">
+            <div className="flex items-center rounded-full p-1.5 gap-1 bg-slate-100/90 border border-slate-200/80 shadow-inner">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={() => setActiveSection(item.name)}
                   className={cn(
-                    "px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300",
+                    "px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-300 tracking-wider",
                     activeSection === item.name
                       ? "text-white shadow-md bg-blue-600"
-                      : "text-slate-600 hover:text-blue-700 hover:bg-white/60"
+                      : "text-slate-600 hover:text-blue-600 hover:bg-white/80"
                   )}
                 >
                   {item.name}
@@ -73,30 +75,28 @@ export function Navbar() {
             </div>
           </div>
 
-          {/* Tombol toggle mobile (kanan) */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
-            className="md:hidden ml-auto glass-pill w-11 h-11 rounded-full grid place-items-center text-blue-700 active:scale-95 transition-transform"
+            className="md:hidden ml-auto w-10 h-10 rounded-full grid place-items-center text-blue-700 bg-slate-100 border border-slate-200 active:scale-95 transition-transform"
           >
             {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
         </div>
 
-        {/* Mobile Navigation Dropdown */}
         {isOpen && (
-          <div className="md:hidden pb-6 pt-2 animate-blob-in">
-            <div className="glass flex flex-col gap-2 rounded-2xl p-4">
+          <div className="md:hidden pb-6 pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="flex flex-col gap-1.5 rounded-2xl p-4 bg-white border border-slate-200 shadow-xl">
               {navItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "text-sm font-bold px-4 py-3 rounded-xl transition-all",
+                    "text-xs font-bold px-4 py-3 rounded-xl transition-all tracking-wider",
                     activeSection === item.name
                       ? "bg-blue-600 text-white shadow-md"
-                      : "text-slate-600 hover:bg-white/60 hover:text-blue-700"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-blue-600"
                   )}
                   onClick={() => {
                     setActiveSection(item.name)
@@ -106,15 +106,6 @@ export function Navbar() {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                href="https://calendly.com/budicahyono-dev/new-meeting"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-3 rounded-xl text-sm font-bold mt-2 shadow-md"
-                onClick={() => setIsOpen(false)}
-              >
-
-              </Link>
             </div>
           </div>
         )}

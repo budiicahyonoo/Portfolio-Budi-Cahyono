@@ -1,5 +1,6 @@
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
+import { Reveal } from "@/components/reveal"
 
 interface Skill {
   id: string
@@ -13,44 +14,57 @@ interface SkillsSectionProps {
 }
 
 export function SkillsSection({ skills }: SkillsSectionProps) {
-  const categories = ["AI/Data", "Backend", "Frontend", "Tools"]
+  const categories = ["AI/ML", "Frontend", "Backend", "Database", "DevOps/Cloud", "Tools"]
 
   return (
-    <section id="skills" className="py-20 px-4 sm:px-6 lg:px-8">
+    <section id="skills" className="py-24 px-4 sm:px-6 lg:px-8 bg-blue-600 text-white relative">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-4">
-            <span className="text-primary">Technical</span> Skills
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Expertise across the AI and software development stack
-          </p>
-        </div>
+        <Reveal className="text-center mb-16">
+          <div>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold mb-4 text-white">
+              Technical <span className="text-blue-200">Skills</span>
+            </h2>
+            <p className="text-lg text-white/85 max-w-2xl mx-auto">
+              Comprehensive technical stack across AI engineering and modern web development
+            </p>
+          </div>
+        </Reveal>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((category) => {
-            const categorySkills = skills.filter((s) => s.category === category)
+            const categorySkills = skills.filter((s) => 
+              s.category.toLowerCase() === category.toLowerCase() ||
+              (category === "AI/ML" && (s.category === "AI/Data" || s.category === "AI/ML"))
+            )
+
             return (
-              <Card key={category} className="p-6 bg-card border-border hover:border-primary transition-colors">
-                <h3 className="text-xl font-semibold text-primary mb-6">{category}</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  {categorySkills.map((skill) => (
-                    <div
-                      key={skill.id}
-                      className="flex flex-col items-center gap-2 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
-                    >
-                      <div className="relative w-12 h-12">
-                        <Image
-                          src={skill.logo_url || "/placeholder.svg"}
-                          alt={skill.name}
-                          fill
-                          className="object-contain"
-                        />
+              <Card key={category} className="p-6 bg-white text-slate-900 border border-white/20 shadow-xl rounded-2xl">
+                <h3 className="text-lg font-bold text-blue-600 mb-5 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                  {category}
+                </h3>
+                {categorySkills.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic">No skills added yet.</p>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {categorySkills.map((skill) => (
+                      <div
+                        key={skill.id}
+                        className="flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-blue-50 hover:border-blue-200 transition-all group"
+                      >
+                        <div className="relative w-8 h-8 mb-2">
+                          <Image
+                            src={skill.logo_url || "/placeholder.svg"}
+                            alt={skill.name}
+                            fill
+                            className="object-contain group-hover:scale-110 transition-transform"
+                          />
+                        </div>
+                        <span className="text-xs font-semibold text-slate-700 text-center line-clamp-1">{skill.name}</span>
                       </div>
-                      <span className="text-xs text-center text-muted-foreground">{skill.name}</span>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </Card>
             )
           })}

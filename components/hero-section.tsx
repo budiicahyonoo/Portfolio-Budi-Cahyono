@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
-import { Github, Linkedin, Mail, Twitter, AtSign, X, CheckCircle2, Sparkles } from "lucide-react";
+import { Github, Linkedin, Mail, Twitter, AtSign, X, CheckCircle2 } from "lucide-react";
 
 interface HeroData {
   name: string;
@@ -27,22 +27,53 @@ const socials = [
   { href: "https://www.threads.com/@budii.cahyonoo", icon: AtSign, label: "Threads" },
 ];
 
+const ROLES = ["Software Engineer", "Full Stack Developer", "AI Engineer"];
+
 export function HeroSection({ data }: HeroSectionProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Fungsi pengiriman form menggunakan Web3Forms API (TIDAK DIUBAH)
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [currentText, setCurrentText] = useState(ROLES[0]);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isReducedMotion, setIsReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mediaQuery.matches) {
+      setIsReducedMotion(true);
+      return;
+    }
+
+    const fullText = ROLES[roleIndex];
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting && currentText === fullText) {
+      timer = setTimeout(() => setIsDeleting(true), 1800);
+    } else if (isDeleting && currentText === "") {
+      setIsDeleting(false);
+      setRoleIndex((prev) => (prev + 1) % ROLES.length);
+    } else {
+      const speed = isDeleting ? 40 : 70;
+      timer = setTimeout(() => {
+        setCurrentText((prev) =>
+          isDeleting
+            ? fullText.substring(0, prev.length - 1)
+            : fullText.substring(0, prev.length + 1)
+        );
+      }, speed);
+    }
+
+    return () => clearTimeout(timer);
+  }, [currentText, isDeleting, roleIndex]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     const formData = new FormData(e.currentTarget);
-    
-    // TODO: GANTI TEKS DI BAWAH INI DENGAN ACCESS KEY DARI EMAILMU
     formData.append("access_key", "8676cb06-6338-4dcf-b3ef-51026274f5dc"); 
-    
-    // Subjek email yang akan masuk ke inbox-mu
     formData.append("subject", "🔥 New Hire Me Application from Portfolio");
     formData.append("redirect", "false");
 
@@ -56,50 +87,62 @@ export function HeroSection({ data }: HeroSectionProps) {
 
       if (result.success) {
         setIsSuccess(true);
-        // Tutup popup otomatis setelah 3 detik
         setTimeout(() => {
           setIsModalOpen(false);
           setIsSuccess(false);
         }, 3000);
       } else {
-        alert("Gagal mengirim pesan. Silakan coba lagi.");
-        console.error("Web3Forms Error:", result);
+        alert("Failed to send message. Please try again.");
       }
     } catch (error) {
-      alert("Terjadi kesalahan jaringan.");
-      console.error("Network Error:", error);
+      alert("Network error occurred.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const defaultValProp = "Building scalable web & AI systems for businesses and campuses.";
+
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24 relative overflow-hidden">
+    <section id="home" className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24 pb-16 relative overflow-hidden bg-white text-slate-900">
       <div className="max-w-7xl mx-auto w-full relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           
-          {/* Bagian Kiri - Teks & CTA */}
-          <Reveal className="order-2 lg:order-1 relative z-10 pb-12 lg:pb-0">
+          <Reveal className="order-2 lg:order-1 relative z-10">
             <div className="space-y-6">
-              <div className="space-y-3">
-                
+              
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span>Open to Work / Available for Freelance</span>
+              </div>
 
-                <h1 className="text-hero font-display text-slate-900">
+              <div className="space-y-3">
+                <h1 className="text-hero font-display text-slate-900 text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
                   I&apos;m <span className="text-blue-600">{data.name}</span>
                 </h1>
-                <div className="text-2xl sm:text-3xl md:text-4xl font-semibold text-slate-500 flex flex-wrap items-center gap-x-2">
-                  <span>{data.role}</span>
-                  <span className="text-blue-600 animate-pulse">|</span>
+
+                <div 
+                  className="h-10 sm:h-12 flex items-center text-2xl sm:text-3xl md:text-4xl font-semibold text-slate-600"
+                  aria-label="Software Engineer, Full Stack Developer, AI Engineer"
+                >
+                  {isReducedMotion ? (
+                    <span className="text-slate-600">Software Engineer · Full Stack Developer · AI Engineer</span>
+                  ) : (
+                    <>
+                      <span className="text-slate-700 font-bold">{currentText}</span>
+                      <span className="text-blue-600 animate-pulse ml-1 font-mono font-bold">|</span>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {data.value_proposition && (
-                <p className="text-lg text-slate-500 max-w-lg leading-relaxed">
-                  {data.value_proposition}
-                </p>
-              )}
+              <p className="text-base sm:text-lg text-slate-600 max-w-lg leading-relaxed font-normal">
+                {data.value_proposition || defaultValProp}
+              </p>
 
-              {/* Ikon Sosial Media — glass icon tiles */}
               <div className="flex flex-wrap gap-3">
                 {socials.map(({ href, icon: Icon, label }) => (
                   <Link
@@ -107,23 +150,23 @@ export function HeroSection({ data }: HeroSectionProps) {
                     href={href}
                     target={href.startsWith("mailto:") ? undefined : "_blank"}
                     aria-label={label}
-                    className="glass-icon glow-btn w-11 h-11 rounded-xl grid place-items-center text-blue-600 hover:text-blue-700"
+                    title={label}
+                    className="w-11 h-11 rounded-xl grid place-items-center text-blue-600 hover:text-blue-700 hover:scale-105 transition-all bg-slate-50 border border-slate-200 shadow-sm"
                   >
                     <Icon size={19} />
                   </Link>
                 ))}
               </div>
 
-              {/* Tombol CTA */}
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Button 
                   onClick={() => setIsModalOpen(true)}
                   size="lg" 
-                  className="glow-btn bg-blue-600 text-white font-semibold px-8 rounded-xl shadow-lg shadow-blue-500/30"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02]"
                 >
                   Hire me
                 </Button>
-                <Button asChild size="lg" className="glass-icon glow-btn text-blue-700 font-semibold px-8 rounded-xl">
+                <Button asChild size="lg" variant="outline" className="text-blue-700 border-blue-200 font-semibold px-8 rounded-xl hover:bg-blue-50">
                   <Link href="/cv_budi cahyono_full stack developer.pdf" target="_blank" rel="noopener noreferrer">
                     Download CV
                   </Link>
@@ -132,16 +175,12 @@ export function HeroSection({ data }: HeroSectionProps) {
             </div>
           </Reveal>
 
-          {/* Bagian Kanan - Foto Utama dengan glow + shimmer */}
           <Reveal className="order-1 lg:order-2" delay={120}>
-            <div className="relative flex justify-center lg:justify-end items-end h-[400px] sm:h-[500px] lg:h-[650px] w-full">
-              {/* Halo bercahaya di belakang foto */}
-              <div className="hero-glow" />
-
+            <div className="relative flex justify-center lg:justify-end items-end h-[350px] sm:h-[480px] lg:h-[580px] w-full">
               <div className="relative w-full h-full lg:scale-[1.05] xl:scale-[1.10] transform origin-bottom">
                 <Image
                   src={data.photo_url || "/portfoliostackplus.png"}
-                  alt={data.name}
+                  alt={`Photo of ${data.name}`}
                   fill
                   className="object-contain object-bottom drop-shadow-2xl"
                   priority
@@ -154,15 +193,16 @@ export function HeroSection({ data }: HeroSectionProps) {
         </div>
       </div>
 
-      <div className="hero-fade-bottom" />
-
-      {/* MODAL POPUP HIRE ME */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/30 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="modal-card rounded-2xl w-full max-w-lg p-6 sm:p-8 relative animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-200"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="rounded-2xl w-full max-w-lg p-6 sm:p-8 relative bg-white border border-slate-200 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
             <button 
               onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 w-8 h-8 grid place-items-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-900/5 transition-colors"
+              className="absolute top-4 right-4 w-8 h-8 grid place-items-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               aria-label="Close"
             >
               <X size={20} />
@@ -173,53 +213,52 @@ export function HeroSection({ data }: HeroSectionProps) {
                 <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 grid place-items-center">
                   <CheckCircle2 className="w-8 h-8 text-emerald-500" />
                 </div>
-                <h3 className="font-display text-2xl font-bold text-slate-900">Successfully Sent!</h3>
-                <p className="text-slate-500">Thank you for reaching out. I will get back to you shortly at budicahyono.dev@gmail.com.</p>
+                <h3 className="font-display text-2xl font-bold text-slate-900">Message Sent!</h3>
+                <p className="text-slate-500 text-sm">Thank you for reaching out. I will get back to you shortly via email.</p>
               </div>
             ) : (
               <>
                 <h3 className="font-display text-2xl font-bold text-slate-900 mb-1">Let&apos;s Work Together</h3>
-                <p className="text-sm text-slate-500 mb-6">Fill out the form below to discuss opportunities.</p>
+                <p className="text-sm text-slate-500 mb-6">Fill out the form below to discuss project opportunities or job roles.</p>
                 
-                {/* FORM dengan encType untuk mendukung upload file (TIDAK DIUBAH) */}
                 <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700">Name / Company</label>
-                    <input required type="text" name="name" className="w-full px-3 py-2 rounded-lg border border-blue-100 bg-white/80 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-300 outline-none text-sm transition-all" placeholder="e.g. John Doe from Tech Corp" />
+                    <input required type="text" name="name" className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 outline-none text-sm transition-all" placeholder="e.g. John Doe from Tech Corp" />
                   </div>
                   
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-700">Location</label>
-                      <input required type="text" name="location" className="w-full px-3 py-2 rounded-lg border border-blue-100 bg-white/80 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-300 outline-none text-sm transition-all" placeholder="City, Country" />
+                      <input required type="text" name="location" className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 outline-none text-sm transition-all" placeholder="City, Country" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-700">Position</label>
-                      <input required type="text" name="position" className="w-full px-3 py-2 rounded-lg border border-blue-100 bg-white/80 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-300 outline-none text-sm transition-all" placeholder="e.g. Frontend Engineer" />
+                      <label className="text-xs font-bold text-slate-700">Position / Project</label>
+                      <input required type="text" name="position" className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 outline-none text-sm transition-all" placeholder="e.g. AI Engineer" />
                     </div>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700">Write Letter <span className="font-normal text-slate-400">(Optional)</span></label>
-                    <textarea name="message" className="w-full px-3 py-2 rounded-lg border border-blue-100 bg-white/80 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-300 outline-none text-sm h-24 resize-none transition-all" placeholder="Share more details about the role or project..." />
+                    <label className="text-xs font-bold text-slate-700">Message / Details <span className="font-normal text-slate-400">(Optional)</span></label>
+                    <textarea name="message" className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 outline-none text-sm h-24 resize-none transition-all" placeholder="Share more details..." />
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700">Relevant Link <span className="font-normal text-slate-400">(Optional)</span></label>
-                    <input type="url" name="link" className="w-full px-3 py-2 rounded-lg border border-blue-100 bg-white/80 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-300 outline-none text-sm transition-all" placeholder="https://..." />
+                    <input type="url" name="link" className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 outline-none text-sm transition-all" placeholder="https://..." />
                   </div>
 
                   <div className="space-y-1 pb-2">
-                    <label className="text-xs font-bold text-slate-700">Document <span className="font-normal text-slate-400">(Optional, Max 5MB)</span></label>
+                    <label className="text-xs font-bold text-slate-700">Attachment <span className="font-normal text-slate-400">(Optional, Max 5MB)</span></label>
                     <input 
                       type="file" 
                       name="attachment" 
                       accept=".pdf,.doc,.docx"
-                      className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition-all cursor-pointer" 
+                      className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition-all cursor-pointer" 
                     />
                   </div>
 
-                  <Button type="submit" disabled={isSubmitting} className="glow-btn w-full bg-blue-600 shadow-lg shadow-blue-500/30 text-white rounded-xl py-6 font-semibold">
+                  <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/30 text-white rounded-xl py-6 font-semibold">
                     {isSubmitting ? "Sending..." : "Submit Application"}
                   </Button>
                 </form>

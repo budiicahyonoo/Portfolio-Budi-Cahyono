@@ -17,6 +17,9 @@ export async function GET() {
       date_start: e.date_start,
       date_end: e.date_end,
       sort_order: e.sort_order,
+      achievements: e.achievements ? e.achievements.join('\n') : '', 
+      demo_url: e.demo_url,
+      view_url: e.view_url,
     }));
 
     return NextResponse.json(formattedExperiences);
@@ -28,9 +31,10 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, category, tags, image_url, date_start, date_end, sort_order } = body;
+    const { title, description, category, tags, image_url, date_start, date_end, sort_order, achievements, demo_url, view_url } = body;
 
     const technologiesArray = tags ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
+    const achievementsArray = achievements ? achievements.split('\n').map((a: string) => a.trim()).filter(Boolean) : [];
 
     const newExperience = await prisma.experience.create({
       data: {
@@ -42,6 +46,9 @@ export async function POST(request: Request) {
         date_start: date_start ? new Date(date_start) : null,
         date_end: date_end ? new Date(date_end) : null,
         sort_order: Number(sort_order) || 0,
+        achievements: achievementsArray,
+        demo_url: demo_url || null,
+        view_url: view_url || null,
       },
     });
 

@@ -3,13 +3,12 @@ import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 const prismaClientSingleton = () => {
-  // Menggunakan driver asli PG untuk koneksi yang stabil
-  const connectionString = "postgresql://neondb_owner:npg_j6lHLyREk1ZW@ep-holy-wave-azlucile-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+  // Menggunakan sslmode=verify-full untuk menghilangkan warning keamanan SSL
+  const connectionString = "postgresql://neondb_owner:npg_j6lHLyREk1ZW@ep-holy-wave-azlucile-pooler.c-3.ap-southeast-1.aws.neon.tech/neondb?sslmode=verify-full"
   
   const pool = new Pool({ connectionString })
   const adapter = new PrismaPg(pool)
   
-  // Konstruktor Prisma 7+ mewajibkan adapter ini
   return new PrismaClient({ adapter })
 }
 

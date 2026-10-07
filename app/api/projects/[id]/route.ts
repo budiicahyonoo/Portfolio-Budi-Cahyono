@@ -5,12 +5,11 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// 1. PUT: Update project
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { title, description, category, tags, project_url, github_url, image_url, sort_order } = body;
+    const { title, description, category, tags, project_url, github_url, image_url, sort_order, role, metric } = body;
 
     const technologiesArray = tags ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
 
@@ -25,6 +24,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
         view_url: github_url || null,
         thumbnail_url: image_url || null,
         sort_order: Number(sort_order) || 0,
+        role: role || null,
+        metric: metric || null,
       },
     });
 
@@ -34,7 +35,6 @@ export async function PUT(request: Request, { params }: RouteParams) {
   }
 }
 
-// 2. DELETE: Hapus project
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;

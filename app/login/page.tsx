@@ -25,31 +25,31 @@ export default function LoginPage() {
       router.push('/admin')
       router.refresh()
     } else {
-      setError('Password salah bang!')
+      setError('Invalid passkey. Access denied.')
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <div className="max-w-sm w-full bg-background border border-border p-8 rounded-2xl shadow-sm">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+      <div className="max-w-sm w-full bg-white border border-slate-200 p-8 rounded-2xl shadow-xl">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-black text-blue-600 mb-2">RESTRICTED AREA</h1>
-          <p className="text-sm text-muted-foreground">Masukkan password rahasia untuk masuk ke Admin Dashboard.</p>
+          <h1 className="text-xl font-black tracking-wider text-blue-600 mb-2">RESTRICTED AREA</h1>
+          <p className="text-xs text-slate-500">Enter master password to access the Admin CMS Dashboard.</p>
         </div>
         
         <form onSubmit={handleLogin} className="space-y-4">
           <Input 
             type="password" 
-            placeholder="Password..." 
+            placeholder="Master password..." 
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full text-center"
+            className="w-full text-center text-sm"
           />
-          {error && <p className="text-sm text-red-500 text-center font-medium">{error}</p>}
+          {error && <p className="text-xs text-red-500 text-center font-medium">{error}</p>}
           
-          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-            {isLoading ? 'Mengecek...' : 'Masuk Dashboard'}
+          <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl py-5 text-xs" disabled={isLoading}>
+            {isLoading ? 'Authenticating...' : 'Sign In to Dashboard'}
           </Button>
         </form>
       </div>

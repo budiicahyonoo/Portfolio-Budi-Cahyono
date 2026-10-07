@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-// 1. GET: Ambil semua project dan terjemahkan ke bahasa Frontend
 export async function GET() {
   try {
     const projects = await prisma.project.findMany({
@@ -13,11 +12,13 @@ export async function GET() {
       title: p.title,
       description: p.description,
       category: p.category,
-      tags: p.technologies.join(', '), // Array diubah jadi String
+      tags: p.technologies.join(', '),
       project_url: p.demo_url,
       github_url: p.view_url,
       image_url: p.thumbnail_url,
       sort_order: p.sort_order,
+      role: p.role,
+      metric: p.metric,
     }));
 
     return NextResponse.json(formattedProjects);
@@ -26,13 +27,11 @@ export async function GET() {
   }
 }
 
-// 2. POST: Tambah project baru dengan format Prisma
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, category, tags, project_url, github_url, image_url, sort_order } = body;
+    const { title, description, category, tags, project_url, github_url, image_url, sort_order, role, metric } = body;
 
-    // String "React, Nextjs" diubah jadi Array ["React", "Nextjs"]
     const technologiesArray = tags ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
 
     const newProject = await prisma.project.create({
@@ -45,6 +44,8 @@ export async function POST(request: Request) {
         view_url: github_url || null,
         thumbnail_url: image_url || null,
         sort_order: Number(sort_order) || 0,
+        role: role || null,
+        metric: metric || null,
       },
     });
 
