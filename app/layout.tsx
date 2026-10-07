@@ -1,17 +1,23 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Sora, Plus_Jakarta_Sans } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "sonner"
 import "./globals.css"
 
-import { Footer } from "@/components/footer" 
 
-const _geist = Geist({ subsets: ["latin"] })
-const _geistMono = Geist_Mono({ subsets: ["latin"] })
+const _plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-plus-jakarta-sans",
+})
+
+const _sora = Sora({
+  subsets: ["latin"],
+  variable: "--font-display-sora",
+  weight: ["400", "500", "600", "700", "800"],
+})
 
 // Metadata yang super SEO-friendly dan profesional
-// HAPUS bagian 'icons' karena Next.js akan otomatis membaca file 'icon.png' di folder 'app'
 export const metadata: Metadata = {
   title: "Budi Cahyono | Full-Stack Developer & AI Engineer",
   description:
@@ -25,13 +31,15 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body className={`font-sans antialiased flex flex-col min-h-screen`}>
+    <html lang="en">
+      <body
+        className={`${_plusJakarta.variable} ${_sora.variable} font-sans antialiased flex flex-col min-h-screen`}
+      >
         <main className="flex-grow">
           {children}
         </main>
         
-        <Footer />
+      
         
         <Toaster position="top-center" />
         <Analytics />

@@ -4,12 +4,13 @@ import { HeroSection } from "@/components/hero-section"
 import { ProjectsSection } from "@/components/projects-section"
 import { ExperienceSection } from "@/components/experience-section"
 import { BlogSection } from "@/components/blog-section"
+import { AmbientBackground } from "@/components/ambient-background"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
 export default async function Home() {
-  // Fetch all data in parallel menggunakan Prisma
+  // Fetch all data in parallel using Prisma
   const [homeData, projects, experience, blog] = await Promise.all([
     prisma.home.findFirst(),
     prisma.project.findMany({ orderBy: { sort_order: 'asc' } }),
@@ -21,6 +22,9 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen">
+      {/* Ambient scene: blob biru yang bergerak pelan + grid halus + noise (fixed, z -1) */}
+      <AmbientBackground />
+
       <Navbar />
       <main>
         {/* Tambahkan "as any" untuk membungkam peringatan TypeScript */}

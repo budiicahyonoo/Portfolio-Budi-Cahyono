@@ -406,6 +406,6 @@ MIT License - Free to use untuk personal dan commercial projects.
 **Developed by:** Budi Cahyono - AI Engineer
 
 **Contact:** 
-- Email: [Your Email]
-- LinkedIn: [Your LinkedIn]
-- GitHub: [Your GitHub]
+- Email: budicahyono.dev@gmail.com
+- LinkedIn: linkedin.com/budii-cahyonoo
+- GitHub: github.com/budicayono
