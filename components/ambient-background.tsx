@@ -1,4 +1,18 @@
+"use client"
+
+import { useEffect, useState } from "react"
+
 export function AmbientBackground() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
+
   return (
     <div className="ambient-scene" aria-hidden="true">
       <div className="ambient-grid" />

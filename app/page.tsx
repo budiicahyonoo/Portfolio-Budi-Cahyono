@@ -11,71 +11,124 @@ import { AmbientBackground } from "@/components/ambient-background"
 export const dynamic = "force-dynamic"
 export const revalidate = 0
 
+// Tahun website
+const CURRENT_YEAR = 2026
+
 // Data fallback untuk Kontak jika DB belum diisi
 const defaultContacts = [
-  { id: "1", platform: "Email", url: "mailto:budicahyono.dev@gmail.com" },
-  { id: "2", platform: "LinkedIn", url: "https://linkedin.com/in/budicahyono" },
-  { id: "3", platform: "GitHub", url: "https://github.com/budiicahyonoo" },
-  { id: "4", platform: "Calendly", url: "https://calendly.com/budicahyono-dev/new-meeting" },
+  {
+    id: "1",
+    platform: "Email",
+    url: "mailto:budicahyono.dev@gmail.com",
+  },
+  {
+    id: "2",
+    platform: "LinkedIn",
+    url: "https://linkedin.com/in/budicahyono",
+  },
+  {
+    id: "3",
+    platform: "GitHub",
+    url: "https://github.com/budiicahyonoo",
+  },
+  {
+    id: "4",
+    platform: "Calendly",
+    url: "https://calendly.com/budicahyono-dev/new-meeting",
+  },
 ]
 
-// Data fallback ketersediaan data Home jika DB belum terisi
+// Data fallback Home jika DB belum diisi
 const defaultHome = {
   name: "Budi Cahyono",
   role: "Software Engineer",
-  value_proposition: "Membangun sistem web & AI yang scalable untuk bisnis dan kampus.",
+  value_proposition:
+    "Membangun sistem web & AI yang scalable untuk bisnis dan kampus.",
   photo_url: "/portfoliostackplus.png",
   email: "budicahyono.dev@gmail.com",
 }
 
 export default async function Home() {
-  // Ambil semua data secara paralel dari Prisma
-  const [homeData, skillsData, projectsData, experienceData, blogData, contactsData] = await Promise.all([
+  const [
+    homeData,
+    skillsData,
+    projectsData,
+    experienceData,
+    blogData,
+    contactsData,
+  ] = await Promise.all([
     prisma.home.findFirst().catch(() => null),
-    prisma.skill.findMany({ orderBy: { sort_order: 'asc' } }).catch(() => []),
-    prisma.project.findMany({ orderBy: { sort_order: 'asc' } }).catch(() => []),
-    prisma.experience.findMany({ orderBy: { sort_order: 'asc' } }).catch(() => []),
-    prisma.blog.findMany({ orderBy: { sort_order: 'asc' } }).catch(() => []),
-    prisma.contact.findMany({ orderBy: { sort_order: 'asc' } }).catch(() => []),
+    prisma.skill
+      .findMany({
+        orderBy: { sort_order: "asc" },
+      })
+      .catch(() => []),
+    prisma.project
+      .findMany({
+        orderBy: { sort_order: "asc" },
+      })
+      .catch(() => []),
+    prisma.experience
+      .findMany({
+        orderBy: { sort_order: "asc" },
+      })
+      .catch(() => []),
+    prisma.blog
+      .findMany({
+        orderBy: { sort_order: "asc" },
+      })
+      .catch(() => []),
+    prisma.contact
+      .findMany({
+        orderBy: { sort_order: "asc" },
+      })
+      .catch(() => []),
   ])
 
   const home = homeData || defaultHome
-  const contacts = contactsData.length > 0 ? contactsData : defaultContacts
+  const contacts =
+    contactsData.length > 0 ? contactsData : defaultContacts
 
   return (
     <div className="min-h-screen flex flex-col justify-between relative bg-white text-slate-900">
-      {/* Background ambient dengan efek blur halus */}
       <AmbientBackground />
 
-      {/* Navigasi Utama */}
       <Navbar />
 
       <main className="flex-grow">
-        {/* Section 1: Hero */}
         <HeroSection data={home as any} />
 
-        {/* Section 2: Technical Skills */}
         <SkillsSection skills={skillsData as any} />
 
-        {/* Section 3: Featured Projects */}
         <ProjectsSection projects={projectsData as any} />
 
-        {/* Section 4: Professional Experience */}
         <ExperienceSection experiences={experienceData as any} />
 
-        {/* Section 5: Blog & Insights */}
         <BlogSection posts={blogData as any} />
 
-        {/* Section 6: Contact & Connect */}
         <ContactSection contacts={contacts as any} />
       </main>
 
-      {/* Footer Sederhana & Elegan */}
       <footer className="footer-glass py-8 border-t border-slate-200/80 text-center text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p>© {new Date().getFullYear()} Budi Cahyono. All rights reserved.</p>
+          <p>
+            © {CURRENT_YEAR} Budi Cahyono. All rights reserved.
+          </p>
+
           <p className="text-slate-400">
-            Built with <span className="font-semibold text-slate-700">Next.js 15</span>, <span className="font-semibold text-slate-700">Tailwind v4</span> & <span className="font-semibold text-slate-700">Prisma</span>.
+            Built with{" "}
+            <span className="font-semibold text-slate-700">
+              Next.js 15
+            </span>
+            ,{" "}
+            <span className="font-semibold text-slate-700">
+              Tailwind v4
+            </span>{" "}
+            &{" "}
+            <span className="font-semibold text-slate-700">
+              Prisma
+            </span>
+            .
           </p>
         </div>
       </footer>
