@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -27,15 +27,25 @@ const socials = [
   { href: "https://www.threads.com/@budii.cahyonoo", icon: AtSign, label: "Threads" },
 ];
 
-const ROLES = ["Software Engineer", "Full Stack Developer", "AI Engineer"];
+// Dipakai kalau field Role di admin kosong
+const DEFAULT_ROLES = ["Software Engineer", "Full Stack Developer", "AI Engineer"];
 
 export function HeroSection({ data }: HeroSectionProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // Role dari admin (pisahkan dengan koma), fallback ke default
+  const roles = useMemo(() => {
+    const custom = (data.role || "")
+      .split(",")
+      .map((r) => r.trim())
+      .filter(Boolean);
+    return custom.length > 0 ? custom : DEFAULT_ROLES;
+  }, [data.role]);
+
   const [roleIndex, setRoleIndex] = useState(0);
-  const [currentText, setCurrentText] = useState(ROLES[0]);
+  const [currentText, setCurrentText] = useState(roles[0]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
@@ -46,14 +56,14 @@ export function HeroSection({ data }: HeroSectionProps) {
       return;
     }
 
-    const fullText = ROLES[roleIndex];
+    const fullText = roles[roleIndex % roles.length];
     let timer: NodeJS.Timeout;
 
     if (!isDeleting && currentText === fullText) {
       timer = setTimeout(() => setIsDeleting(true), 1800);
     } else if (isDeleting && currentText === "") {
       setIsDeleting(false);
-      setRoleIndex((prev) => (prev + 1) % ROLES.length);
+      setRoleIndex((prev) => (prev + 1) % roles.length);
     } else {
       const speed = isDeleting ? 40 : 70;
       timer = setTimeout(() => {
@@ -66,14 +76,14 @@ export function HeroSection({ data }: HeroSectionProps) {
     }
 
     return () => clearTimeout(timer);
-  }, [currentText, isDeleting, roleIndex]);
+  }, [currentText, isDeleting, roleIndex, roles]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     const formData = new FormData(e.currentTarget);
-    formData.append("access_key", "8676cb06-6338-4dcf-b3ef-51026274f5dc"); 
+    formData.append("access_key", "8676cb06-6338-4dcf-b3ef-51026274f5dc");
     formData.append("subject", "🔥 New Hire Me Application from Portfolio");
     formData.append("redirect", "false");
 
@@ -107,10 +117,10 @@ export function HeroSection({ data }: HeroSectionProps) {
     <section id="home" className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24 pb-16 relative overflow-hidden bg-white text-slate-900">
       <div className="max-w-7xl mx-auto w-full relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          
+
           <Reveal className="order-2 lg:order-1 relative z-10">
             <div className="space-y-6">
-              
+
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 shadow-sm">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -124,12 +134,12 @@ export function HeroSection({ data }: HeroSectionProps) {
                   I&apos;m <span className="text-blue-600">{data.name}</span>
                 </h1>
 
-                <div 
+                <div
                   className="h-10 sm:h-12 flex items-center text-2xl sm:text-3xl md:text-4xl font-semibold text-slate-600"
-                  aria-label="Software Engineer, Full Stack Developer, AI Engineer"
+                  aria-label={roles.join(", ")}
                 >
                   {isReducedMotion ? (
-                    <span className="text-slate-600">Software Engineer · Full Stack Developer · AI Engineer</span>
+                    <span className="text-slate-600">{roles.join(" · ")}</span>
                   ) : (
                     <>
                       <span className="text-slate-700 font-bold">{currentText}</span>
@@ -159,9 +169,9 @@ export function HeroSection({ data }: HeroSectionProps) {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Button 
+                <Button
                   onClick={() => setIsModalOpen(true)}
-                  size="lg" 
+                  size="lg"
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-[1.02]"
                 >
                   Hire me
@@ -189,18 +199,18 @@ export function HeroSection({ data }: HeroSectionProps) {
               </div>
             </div>
           </Reveal>
-          
+
         </div>
       </div>
 
       {isModalOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-200"
           role="dialog"
           aria-modal="true"
         >
           <div className="rounded-2xl w-full max-w-lg p-6 sm:p-8 relative bg-white border border-slate-200 shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
-            <button 
+            <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 w-8 h-8 grid place-items-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               aria-label="Close"
@@ -220,13 +230,13 @@ export function HeroSection({ data }: HeroSectionProps) {
               <>
                 <h3 className="font-display text-2xl font-bold text-slate-900 mb-1">Let&apos;s Work Together</h3>
                 <p className="text-sm text-slate-500 mb-6">Fill out the form below to discuss project opportunities or job roles.</p>
-                
+
                 <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700">Name / Company</label>
                     <input required type="text" name="name" className="w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 outline-none text-sm transition-all" placeholder="e.g. John Doe from Tech Corp" />
                   </div>
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label className="text-xs font-bold text-slate-700">Location</label>
@@ -250,11 +260,11 @@ export function HeroSection({ data }: HeroSectionProps) {
 
                   <div className="space-y-1 pb-2">
                     <label className="text-xs font-bold text-slate-700">Attachment <span className="font-normal text-slate-400">(Optional, Max 5MB)</span></label>
-                    <input 
-                      type="file" 
-                      name="attachment" 
+                    <input
+                      type="file"
+                      name="attachment"
                       accept=".pdf,.doc,.docx"
-                      className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition-all cursor-pointer" 
+                      className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 transition-all cursor-pointer"
                     />
                   </div>
 
