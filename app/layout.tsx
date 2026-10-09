@@ -17,7 +17,7 @@ const sora = Sora({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://budicahyono.dev"),
+  metadataBase: new URL("https://budicahyono.my.id"),
   title: "Budi Cahyono | Software Engineer, Full Stack Developer & AI Engineer",
   description:
     "Portfolio resmi Budi Cahyono — Software Engineer, Full Stack Developer, dan AI Engineer. Spesialisasi dalam pengembangan aplikasi web scalable, integrasi Generative AI, RAG pipeline, dan arsitektur Agentic AI.",
@@ -35,12 +35,12 @@ export const metadata: Metadata = {
     "Jakarta",
     "Indonesia"
   ],
-  authors: [{ name: "Budi Cahyono", url: "https://budicahyono.dev" }],
+  authors: [{ name: "Budi Cahyono", url: "https://budicahyono.my.id" }],
   creator: "Budi Cahyono",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://budicahyono.dev",
+    url: "https://budicahyono.my.id",
     title: "Budi Cahyono | Software Engineer & AI Engineer",
     description: "Membangun sistem web & AI yang scalable untuk bisnis dan kampus.",
     siteName: "Budi Cahyono Portfolio",
