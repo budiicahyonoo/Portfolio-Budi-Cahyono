@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Reveal } from "@/components/reveal";
-import { Github, Linkedin, Mail, Twitter, AtSign, X, CheckCircle2 } from "lucide-react";
+import { Github, Linkedin, Mail, Twitter, AtSign, X, CheckCircle2, Code2, Sparkles } from "lucide-react";
 
 interface HeroData {
   name: string;
@@ -113,8 +113,25 @@ export function HeroSection({ data }: HeroSectionProps) {
 
   const defaultValProp = "Building scalable web & AI systems for businesses and campuses.";
 
+  // Badge melayang di foto (maks 2 role pertama)
+  const badgeA = roles[0];
+  const badgeB = roles[1];
+
   return (
     <section id="home" className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-24 pb-16 relative overflow-hidden bg-white text-slate-900">
+      {/* Animasi badge melayang */}
+      <style>{`
+        @keyframes hero-float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
+        }
+        .hero-float { animation: hero-float 4s ease-in-out infinite; }
+        .hero-float-delay { animation: hero-float 4s ease-in-out 1.6s infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .hero-float, .hero-float-delay { animation: none; }
+        }
+      `}</style>
+
       <div className="max-w-7xl mx-auto w-full relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
 
@@ -185,18 +202,76 @@ export function HeroSection({ data }: HeroSectionProps) {
             </div>
           </Reveal>
 
+
+          {/* ===== FOTO: POP-OUT CARD EFFECT ===== */}
           <Reveal className="order-1 lg:order-2" delay={120}>
-            <div className="relative flex justify-center lg:justify-end items-end h-[350px] sm:h-[480px] lg:h-[580px] w-full">
-              <div className="relative w-full h-full lg:scale-[1.05] xl:scale-[1.10] transform origin-bottom">
+            <div className="relative mx-auto lg:ml-auto lg:mr-0 w-full max-w-[300px] sm:max-w-[360px] lg:max-w-[420px] mt-4 lg:mt-0">
+
+              {/* Glow lembut di belakang kartu */}
+              <div className="absolute inset-x-6 bottom-0 h-[70%] rounded-[2rem] bg-blue-500/30 blur-3xl" aria-hidden="true" />
+
+              {/* Kartu gradasi: tinggi = 72% dari tinggi foto */}
+              <div
+                className="absolute bottom-0 inset-x-0 h-[72%] rounded-[2rem] bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 shadow-2xl shadow-blue-500/30 overflow-hidden ring-1 ring-white/20"
+                aria-hidden="true"
+              >
+                <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/10" />
+                <div className="absolute -bottom-20 -left-16 w-64 h-64 rounded-full bg-indigo-400/30" />
+                <div className="absolute top-1/3 -left-8 w-24 h-24 rounded-full border-2 border-white/20" />
+                <div
+                  className="absolute inset-0 opacity-30"
+                  style={{
+                    backgroundImage: "radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1px)",
+                    backgroundSize: "18px 18px",
+                    maskImage: "linear-gradient(to bottom right, black, transparent 70%)",
+                    WebkitMaskImage: "linear-gradient(to bottom right, black, transparent 70%)",
+                  }}
+                />
+              </div>
+
+              {/* Foto: selebar kartu, tinggi mengikuti rasio asli (tidak gepeng).
+                  Hanya sudut bawah yang dipotong mengikuti kartu, bagian atas bebas (pop-out). */}
+              <div
+                className="relative"
+                style={{ clipPath: "inset(0 0 0 0 round 0 0 2rem 2rem)" }}
+              >
                 <Image
                   src={data.photo_url || "/portfoliostackplus.png"}
                   alt={`Photo of ${data.name}`}
-                  fill
-                  className="object-contain object-bottom drop-shadow-2xl"
+                  width={0}
+                  height={0}
+                  sizes="(max-width: 640px) 300px, (max-width: 1024px) 360px, 420px"
+                  style={{ width: "100%", height: "auto" }}
+                  className="block drop-shadow-[0_20px_30px_rgba(15,23,42,0.35)]"
                   priority
                   unoptimized
                 />
               </div>
+
+              {/* Badge melayang */}
+              {badgeA && (
+                <div
+                  className="hero-float absolute left-0 sm:-left-4 top-[34%] z-10 flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-md border border-white shadow-xl shadow-slate-900/10 px-3 py-2 sm:px-3.5 sm:py-2.5"
+                  aria-hidden="true"
+                >
+                  <span className="grid place-items-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-600">
+                    <Code2 className="w-4 h-4" />
+                  </span>
+                  <span className="text-[11px] sm:text-xs font-bold text-slate-800 whitespace-nowrap">{badgeA}</span>
+                </div>
+              )}
+
+              {badgeB && (
+                <div
+                  className="hero-float-delay absolute right-0 sm:-right-4 bottom-[16%] z-10 flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-md border border-white shadow-xl shadow-slate-900/10 px-3 py-2 sm:px-3.5 sm:py-2.5"
+                  aria-hidden="true"
+                >
+                  <span className="grid place-items-center w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-indigo-50 text-indigo-600">
+                    <Sparkles className="w-4 h-4" />
+                  </span>
+                  <span className="text-[11px] sm:text-xs font-bold text-slate-800 whitespace-nowrap">{badgeB}</span>
+                </div>
+              )}
             </div>
           </Reveal>
 
