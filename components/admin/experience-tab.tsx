@@ -60,16 +60,40 @@ export function ExperienceTab() {
     setDateStart(""); setDateEnd(""); setSortOrder("0");
   };
 
-  const handleEdit = (e: Experience) => {
-    setEditingId(e.id); setTitle(e.title); setDesc(e.description); setCategory(e.category);
-    setTechInput(e.technologies ? e.technologies.join(", ") : "");
-    setAchievementsInput(e.achievements ? e.achievements.join("\n") : "");
-    setThumbnailUrl(e.thumbnail_url || "");
-    setWorkPhotos(e.work_photos || []);
-    setDemoUrl(e.demo_url || ""); setViewUrl(e.view_url || "");
-    setSortOrder(String(e.sort_order));
+  const handleEdit = (e: any) => {
+    setEditingId(e.id); 
+    setTitle(e.title || ""); 
+    setDesc(e.description || ""); 
+    setCategory(e.category || "Work");
+    
+    // Sinkronisasi data tech / tags (antisipasi perbedaan nama properti API)
+    const techData = e.technologies || e.tags;
+    setTechInput(
+      Array.isArray(techData) 
+        ? techData.join(", ") 
+        : typeof techData === 'string' ? techData : ""
+    );
+
+    // FIX ERROR: Antisipasi achievements berbentuk String atau Array secara aman
+    setAchievementsInput(
+      Array.isArray(e.achievements)
+        ? e.achievements.join("\n")
+        : typeof e.achievements === 'string' ? e.achievements : ""
+    );
+
+    // Sinkronisasi data thumbnail / image_url
+    setThumbnailUrl(e.thumbnail_url || e.image_url || "");
+    
+    // Pastikan work_photos dimasukkan dengan aman
+    setWorkPhotos(Array.isArray(e.work_photos) ? e.work_photos : []);
+    
+    setDemoUrl(e.demo_url || ""); 
+    setViewUrl(e.view_url || "");
+    setSortOrder(String(e.sort_order ?? 0));
+    
     setDateStart(e.date_start ? new Date(e.date_start).toISOString().split('T')[0] : "");
     setDateEnd(e.date_end ? new Date(e.date_end).toISOString().split('T')[0] : "");
+    
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

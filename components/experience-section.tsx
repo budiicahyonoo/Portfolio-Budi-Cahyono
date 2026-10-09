@@ -169,17 +169,29 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                               <p className="text-sm text-slate-600 leading-relaxed line-clamp-3">{exp.description}</p>
                             </div>
 
+                            {/* KODE BARU: Mengantisipasi jika properti bernama technologies atau tags */}
                             <div className="flex flex-wrap gap-1.5 mt-auto pt-2">
-                              {exp.technologies && exp.technologies.slice(0, 3).map((tech) => (
-                                <span key={tech} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                                  {tech}
-                                </span>
-                              ))}
-                              {exp.technologies && exp.technologies.length > 3 && (
-                                <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-slate-50 text-slate-500 border border-slate-200">
-                                  +{exp.technologies.length - 3}
-                                </span>
-                              )}
+                              {(() => {
+                                const techData = exp.technologies || (exp as any).tags || [];
+                                const techArray = Array.isArray(techData) 
+                                  ? techData 
+                                  : typeof techData === 'string' ? (techData as string).split(',').map(t => t.trim()).filter(Boolean) : [];
+                                  
+                                return (
+                                  <>
+                                    {techArray.slice(0, 3).map((tech: string) => (
+                                      <span key={tech} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                                        {tech}
+                                      </span>
+                                    ))}
+                                    {techArray.length > 3 && (
+                                      <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-slate-50 text-slate-500 border border-slate-200">
+                                        +{techArray.length - 3}
+                                      </span>
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </div>
 
                             {(exp.demo_url || exp.view_url) && (
@@ -256,16 +268,30 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                 </div>
               )}
 
+
+              {/* KODE BARU: fallback aman agar map tidak kosong/error */}
               <div className="mb-8">
                 <h4 className="text-sm font-bold text-slate-900 mb-3">Technologies Used</h4>
                 <div className="flex flex-wrap gap-2">
-                  {selectedExp.technologies?.map((tech) => (
-                    <span key={tech} className="text-xs font-medium px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-100">
-                      {tech}
-                    </span>
-                  ))}
+                  {(() => {
+                    const techData = selectedExp.technologies || (selectedExp as any).tags || [];
+                    const techArray = Array.isArray(techData) 
+                      ? techData 
+                      : typeof techData === 'string' ? (techData as string).split(',').map(t => t.trim()).filter(Boolean) : [];
+
+                    if (techArray.length === 0) {
+                      return <span className="text-xs text-slate-400 italic">Tidak ada teknologi yang dicantumkan</span>;
+                    }
+
+                    return techArray.map((tech: string) => (
+                      <span key={tech} className="text-xs font-medium px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-100">
+                        {tech}
+                      </span>
+                    ));
+                  })()}
                 </div>
               </div>
+
 
               {(selectedExp.demo_url || selectedExp.view_url) && (
                 <div className="flex gap-3 pt-6 border-t border-slate-100">
