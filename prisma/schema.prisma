@@ -36,6 +36,8 @@ model Project {
   demo_url      String?
   view_url      String?
   technologies  String[]
+  achievements  String[] @default([]) // Fitur utama / pencapaian
+  work_photos   String[] @default([]) // Galeri foto proyek
   role          String?  // Contoh: "Solo Developer", "Lead AI Engineer"
   metric        String?  // Contoh: "Akurasi 99.68%", "Digunakan 450+ pengguna"
   sort_order    Int      @default(0)
