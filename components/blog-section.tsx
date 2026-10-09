@@ -1,16 +1,17 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Clock, BookOpen } from "lucide-react"
+import { ArrowRight, Clock, BookOpen, EyeOff } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Reveal } from "@/components/reveal"
 
 interface BlogPost {
   id: string
   title: string
+  slug: string
   description: string
   category: string
   thumbnail_url: string
-  view_url: string | null
+  is_published: boolean
   read_time: number | null
 }
 
@@ -20,7 +21,10 @@ interface BlogSectionProps {
 
 export function BlogSection({ posts }: BlogSectionProps) {
   const categories = ["What You Learned", "How You Built Something", "Lessons From Failure"]
-  const isEnoughPosts = posts && posts.length >= 3
+  
+  // HANYA tampilkan artikel yang sudah dipublish
+  const publishedPosts = posts?.filter(p => p.is_published) || [];
+  const isEnoughPosts = publishedPosts.length >= 3;
 
   return (
     <section id="blog" className="py-24 px-4 sm:px-6 lg:px-8 relative bg-white text-slate-900">
@@ -61,7 +65,7 @@ export function BlogSection({ posts }: BlogSectionProps) {
             </div>
 
             {categories.map((category) => {
-              const categoryPosts = posts.filter((p) => 
+              const categoryPosts = publishedPosts.filter((p) => 
                 p.category.toUpperCase() === category.toUpperCase()
               )
 
@@ -74,11 +78,7 @@ export function BlogSection({ posts }: BlogSectionProps) {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {categoryPosts.map((post, i) => (
-                        <div
-                          key={post.id}
-                          className="stagger-item"
-                          style={{ animationDelay: `${i * 90}ms`, height: '100%' }}
-                        >
+                        <div key={post.id} className="stagger-item" style={{ animationDelay: `${i * 90}ms`, height: '100%' }}>
                           <article className="lift-hover group h-full flex flex-col rounded-2xl overflow-hidden bg-white text-slate-900 border border-slate-200/80 shadow-sm">
                             <div className="relative h-48 overflow-hidden bg-slate-100">
                               <Image
@@ -104,15 +104,14 @@ export function BlogSection({ posts }: BlogSectionProps) {
                                   {post.description}
                                 </p>
                               </div>
-                              {post.view_url && (
-                                <Link
-                                  href={post.view_url}
-                                  className="group/btn mt-auto w-full inline-flex items-center justify-center gap-2 text-sm font-semibold rounded-xl px-4 py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition-all"
-                                >
-                                  Read More
-                                  <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                                </Link>
-                              )}
+                              {/* PERUBAHAN DISINI: Arahkan ke /blog/slug */}
+                              <Link
+                                href={`/blog/${post.slug}`}
+                                className="group/btn mt-auto w-full inline-flex items-center justify-center gap-2 text-sm font-semibold rounded-xl px-4 py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white transition-all"
+                              >
+                                Read More
+                                <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                              </Link>
                             </div>
                           </article>
                         </div>

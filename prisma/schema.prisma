@@ -58,15 +58,19 @@ model Experience {
   sort_order    Int       @default(0)
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
+  work_photos   String[] @default([]) // Array of URLs to work photos
 }
 
 model Blog {
   id            String    @id @default(uuid())
   title         String
+  slug          String?    @unique // Wajib untuk SEO URL
   description   String
-  category      String    // What You Learned, How You Built Something, Lessons From Failure
+  category      String    
+  tags          String[]  @default([]) // Label topik
   thumbnail_url String?
-  content       String?   // Teks HTML/Rich Text dari editor
+  content       String?   // Konten Markdown / HTML
+  is_published  Boolean   @default(false) // Draft (false) atau Publish (true)
   view_url      String?
   read_time     Int?
   views         Int       @default(0)

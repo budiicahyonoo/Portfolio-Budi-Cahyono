@@ -9,16 +9,21 @@ export async function PUT(request: Request, { params }: RouteParams) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { title, description, category, thumbnail_url, content, read_time, sort_order } = body;
+    
+    // Pastikan menangkap slug, tags, dan is_published
+    const { title, slug, description, category, tags, thumbnail_url, content, read_time, sort_order, is_published } = body;
 
     const updatedBlog = await prisma.blog.update({
       where: { id },
       data: {
         title,
+        slug, // Wajib disertakan agar slug terupdate
         description,
         category,
+        tags: tags || [], // Simpan sebagai array
         thumbnail_url: thumbnail_url || null,
         content: content || null,
+        is_published: is_published ?? false, // Update status publish/draft
         read_time: Number(read_time) || 5,
         sort_order: Number(sort_order) || 0,
       },

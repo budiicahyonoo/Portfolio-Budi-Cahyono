@@ -31,10 +31,11 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, category, tags, image_url, date_start, date_end, sort_order, achievements, demo_url, view_url } = body;
+    const { title, description, category, tags, image_url, date_start, date_end, sort_order, achievements, demo_url, view_url, work_photos } = body;
 
     const technologiesArray = tags ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
     const achievementsArray = achievements ? achievements.split('\n').map((a: string) => a.trim()).filter(Boolean) : [];
+    const workPhotosArray = work_photos ? work_photos.split(',').map((p: string) => p.trim()).filter(Boolean) : [];
 
     const newExperience = await prisma.experience.create({
       data: {
